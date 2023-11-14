@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         easyNext yt
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  double-click left/right button to play next or previous video on youtube
 // @author       wantvtre
 // @match        https://www.youtube.com/*
@@ -18,9 +18,6 @@
     var rightClickButton = document.querySelector('.ytp-prev-button.ytp-button');
 
     function handleContextMenu(event) {
-        // Prevent the default context menu behavior
-        event.preventDefault();
-
         // Increment the contextMenuClickCount
         contextMenuClickCount++;
 
