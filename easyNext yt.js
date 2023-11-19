@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         easyNext yt
 // @namespace    http://tampermonkey.net/
-// @version      0.2
-// @description  double-click left/right button to play next or previous video on youtube
-// @author       wantvtre
+// @version      0.7
+// @description  Double-click left/right button to play next or previous video on YouTube, double right-click to go back in history.
+// @author       mohdsafran
 // @match        https://www.youtube.com/*
 // @match        https://www.youtube.com
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=youtube.com
@@ -13,36 +13,51 @@
 (function() {
     'use strict';
 
+    // Counter for double-right-click functionality
     var contextMenuClickCount = 0;
-    var leftClickButton = document.querySelector('.ytp-next-button.ytp-button');
-    var rightClickButton = document.querySelector('.ytp-prev-button.ytp-button');
+    var leftClickButton, rightClickButton;
 
-    function handleContextMenu(event) {
-        // Increment the contextMenuClickCount
-        contextMenuClickCount++;
+    // Check for buttons and set event listeners
+    function checkForButtons() {
+        leftClickButton = document.querySelector('.ytp-next-button.ytp-button');
 
-        // Check if it's a double right-click (contextmenu)
-        if (contextMenuClickCount === 2) {
-            // Trigger the button click
-            rightClickButton.click();
+        if (leftClickButton) {
+            setEventListeners();
+            resetContextMenuClickCount();
+        } else {
+            setTimeout(checkForButtons, 1000);
         }
     }
 
-    // Function to reset contextMenuClickCount every second
+    // Set event listeners for double-click and double-right-click actions
+    function setEventListeners() {
+        // Function to handle double-right-click (context menu)
+        function handleContextMenu() {
+            contextMenuClickCount++;
+
+            // Perform action on double-right-click
+            if (contextMenuClickCount === 2) {
+                contextMenuClickCount = 0;
+                window.history.back(); // Navigate back in history
+            }
+        }
+
+        // Event listener for double-click on the document
+        document.addEventListener('dblclick', function(event) {
+            leftClickButton.click(); // Trigger left button click action
+        });
+
+        // Event listener for context menu (right-click)
+        document.addEventListener('contextmenu', handleContextMenu);
+    }
+
+    // Reset the context menu click count at regular intervals
     function resetContextMenuClickCount() {
         setInterval(function() {
             contextMenuClickCount = 0;
-        }, 1000);
+        }, 1000); // Resets count every second
     }
 
-    // Start the interval to reset contextMenuClickCount
-    resetContextMenuClickCount();
-
-    document.addEventListener('dblclick', function(event) {
-        // Trigger the button click when the document is clicked
-        leftClickButton.click();
-    });
-
-    document.addEventListener('contextmenu', handleContextMenu);
+    // Start checking for buttons
+    checkForButtons();
 })();
-
